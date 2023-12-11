@@ -1,6 +1,5 @@
-from rest_framework import viewsets, generics
-from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, generics, status
+from rest_framework.response import Response
 
 from school.models import Student, Course, Registration
 from school.serielizer import (
@@ -8,7 +7,8 @@ from school.serielizer import (
     CourseSerializer, 
     RegistrationSerializer, 
     ListRegistrationStudentSerializer,
-    ListRegistrationCourseSerializer    
+    ListRegistrationCourseSerializer,
+    StudentSerializerV2
 )
 
 
@@ -17,23 +17,34 @@ class StudentViewSet(viewsets.ModelViewSet):
     """Show all students"""
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.request.version == "v2":
+            return StudentSerializerV2
+        else: 
+            return StudentSerializer
     
 class CourseViewSet(viewsets.ModelViewSet):
     """Show all courses"""
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            id = str(serializer.data["id"])
+            response["Location"] = request.build_absolute_uri() + id
+            return response
     
     
 class RegistrationViewSet(viewsets.ModelViewSet):
     """List all registrations"""
     queryset = Registration.objects.all()
     serializer_class = RegistrationSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', "post", "put", 'path', 'options']
+
     
     
 class ListRegistrationStudent(generics.ListAPIView):
@@ -42,8 +53,7 @@ class ListRegistrationStudent(generics.ListAPIView):
         queryset = Registration.objects.filter(student_id=self.kwargs['pk'])
         return queryset
     serializer_class = ListRegistrationStudentSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+
     
 class ListRegistrationCourse(generics.ListAPIView):
     """List all studets registrations"""
@@ -51,5 +61,4 @@ class ListRegistrationCourse(generics.ListAPIView):
         queryset = Registration.objects.filter(course_id=self.kwargs['pk'])
         return queryset
     serializer_class = ListRegistrationCourseSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    

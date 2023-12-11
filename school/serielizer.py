@@ -42,3 +42,9 @@ class ListRegistrationCourseSerializer(serializers.ModelSerializer):
         
     def get_period(self, obj):
         return obj.get_period_display()
+    
+
+class StudentSerializerV2(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["id", "name", "rg", "cpf", "birth_date", 'phone']

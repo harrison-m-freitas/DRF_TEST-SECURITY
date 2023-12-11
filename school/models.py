@@ -7,6 +7,7 @@ class Student(models.Model):
     rg = models.CharField(max_length=9)
     cpf = models.CharField(max_length=11)
     birth_date = models.DateField()
+    phone = models.CharField(max_length=11, default="")
     
     def __str__(self) -> str:
         return self.name
@@ -15,7 +16,7 @@ class Student(models.Model):
 class Course(models.Model):
     LEVEL = (
         ("B", "Basic"),
-        ("I", "Intermediary"),
+        ("I", "Intermediate"),
         ("A", "Advanced")
     )
     
