@@ -9,7 +9,7 @@
 - Django Redis
 - Django Admin Honeypot
 
-Uma API com Django REST, ucm CRUD de uma escola mostrando dados dos alunos, cursos e matriculas.
+Uma API com Django REST, um CRUD de uma escola mostrando dados dos alunos, cursos e matriculas.
 
 ## Conteudo Aprendido
 - Aprenda na prática como trabalhar com arquivos estáticos
