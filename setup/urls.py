@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 from rest_framework import routers
 
@@ -28,8 +30,9 @@ router.register("registrations", RegistrationViewSet, basename="registrations")
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin", include('admin_honeypot.urls', namespace="admin_honeypot")),
+    path('control/', admin.site.urls),
     path("", include(router.urls)),
     path("students/<int:pk>/registrations/", ListRegistrationStudent.as_view()),
     path("courses/<int:pk>/registrations/", ListRegistrationCourse.as_view())
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
